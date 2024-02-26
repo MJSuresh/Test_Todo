@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="ToDoStyle.css">
+    <script src="todo_submit.js"></script>
+</head>
+
+<body>
+    <header>
+        <h2>To-Do List App</h2>
+    </header>
+
+    <main>
+        <div class="middle">
+            <div class="left">
+                <div class="forms" id="new-task-form">
+                    <input type="text" id="title" maxlength="400" placeholder="Add Daily Task"
+                        class="form-control-input" required>
+                    <i class="fa-solid fa-square-plus" id="add-icon"></i>
+                </div>
+                <div class="navbar">
+                    <a href="#" class="active" id="All">All</a>
+                    <a href="#" id="Progress">Progress</a>
+                    <a href="#" id="Completed">Finished</a>
+                </div>
+            </div>
+
+            <div class="right">
+
+                <ul id="tasks">
+                    <!--          <li class="task">
+                          <div class="content">
+                          <span class="text">${task}</span>
+                          </div>
+                          <div class="actions">
+                          <button onclick="checkbox_function(this)" id="myCheckbox" ><i class="fa-regular fa-circle-check" style="background-color: orange;border-radius:100%;"></i></button>
+                            <button class="edit" onclick="edit_function(this)"><i class="fa-solid fa-pen"></i></button>
+                            <button class="delete" onclick="delete_function(this)"><i class="fa-solid fa-trash"></i></button>
+                          </div>
+          </li>
+    -->
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>All © 2024. All Rights Reserved.</footer>
+</body>
+
+</html>

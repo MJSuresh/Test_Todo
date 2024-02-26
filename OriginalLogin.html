@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="OriginalLogin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+    <div class="total-div">
+        <div class="login-div">
+            <form>
+                <i>
+                    <h1>Login</h1>
+                </i>
+                <div class="details">Phone Number</div>
+                <input type="tel" id="mobilenumber" name="mobilenumber" placeholder="Enter Number" maxlength="10"
+                    class="form" title="Enter 10 Digit Phone Number" />
+                <br>
+                <div id="mobileError" class="error-message"></div>
+                <br>
+                <div class="details">Password</div>
+                <input type="password" id="password" name="password" maxlength="7" placeholder="Enter Password"
+                    class="form"
+                    title="Enter a strong password (6 characters, including uppercase, lowercase, and numbers)" />
+                <br>
+                <div id="passwordError" class="error-message"></div>
+                <br>
+
+                <button type="submit" class="form" id="login-btn">Login</button>
+                <br>
+                <p class="spacing">
+                    <a href="#" id="forget-password"
+                        onclick="call_twitter('https://twitter.com/i/flow/password_reset')">Forget Password?</a>
+                    <a href="#" id="create-new-account"
+                        onclick="call_twitter('https://twitter.com/i/flow/signup')">Create New Account</a>
+                </p>
+
+                <h4>Login with other option</h4>
+                <div class="login-option">
+                    <a href="#" class="fa fa-facebook"></a>
+                    <a href="#" class="fa fa-twitter"></a>
+                    <a href="#" class="fa fa-google"></a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+<script src="OriginalLogin.js"></script>
+
+</html>
