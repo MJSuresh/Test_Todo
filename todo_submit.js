@@ -57,4 +57,49 @@ function showNotification(message, type) {
     }, 1000);
 }
 
-module.exports = { submitTask, showNotification };
+function confirmFunction(message, content) {
+    const confirmBox = document.createElement("div");
+    confirmBox.classList.add("confirm-box");
+  
+    const messageBox = document.createElement("div");
+    messageBox.classList.add("message-box");
+    messageBox.innerText = message;
+    confirmBox.appendChild(messageBox);
+  
+    const popTaskBox = document.createElement("div");
+    popTaskBox.classList.add("popTaskBox");
+    popTaskBox.innerText = content;
+    messageBox.appendChild(popTaskBox);
+  
+    const buttonBox = document.createElement("div");
+    buttonBox.classList.add("button-box");
+    messageBox.appendChild(buttonBox);
+  
+    const yesBox = document.createElement("button");
+    yesBox.classList.add("yes-button");
+    yesBox.textContent = "Yes";
+    buttonBox.appendChild(yesBox);
+  
+    const noBox = document.createElement("button");
+    noBox.classList.add("no-button");
+    noBox.textContent = "No";
+    buttonBox.appendChild(noBox);
+  
+    document.body.appendChild(confirmBox);
+  
+    // function removeConfirmationBox() {
+    //   document.body.removeChild(confirmBox);
+    // }
+  
+    // yesBox.addEventListener("click", () => {
+    //   callback(true);
+    //   removeConfirmationBox();
+    // });
+  
+    // noBox.addEventListener("click", () => {
+    //   callback(false);
+    //   removeConfirmationBox();
+    // });
+  }
+
+module.exports = { submitTask, showNotification, confirmFunction };

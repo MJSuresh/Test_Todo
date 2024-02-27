@@ -1,19 +1,14 @@
-const jsdom = require('jsdom');
-const { JSDOM } = jsdom;
 let passw_submit = require('./ExPasswordInputTest');
 
-describe('Test mobile input', () => {
-    let dom;
+const fs = require('fs')
+const path = require('path')
+const html = fs.readFileSync(path.resolve(__dirname, './OriginalLogin.html'), 'utf8')
+
+describe('Test password input', () => {
     let passwordError;
-
     beforeEach(() => {
-        dom = new JSDOM(`<!DOCTYPE html><html lang="en"><body><div id="passwordError" class="error-message"></div></body></html>`, { runScripts: 'dangerously' });
-        global.document = dom.window.document;
-        passwordError = dom.window.document.getElementById('passwordError');
-    });
-
-    afterEach(() => {
-        delete global.document;
+        document.documentElement.innerHTML = html.toString();
+        passwordError = document.getElementById('passwordError');
     });
 
     test('Valid password', () => {

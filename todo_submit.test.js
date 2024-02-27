@@ -1,8 +1,63 @@
-const { submitTask, showNotification } = require('./todo_submit');
+const { submitTask, showNotification, confirmFunction } = require('./todo_submit');
 
 const progress = jest.fn();
 const all = jest.fn();
 const showNotification_mock = jest.fn();
+
+const fs = require('fs')
+const path = require('path')
+const html = fs.readFileSync(path.resolve(__dirname, './todo_html.html'), 'utf8')
+
+describe('Test mobile input', () => {
+    beforeEach(() => {
+        document.documentElement.innerHTML = html.toString();
+    });
+
+    test('Testing the presents of header', () => {
+        expect(document.querySelector('header h2').textContent).toBe('To-Do List App');
+    });
+
+    test('Testing the presents of input box', () => {
+        expect(document.querySelector('.form-control-input')).toBeTruthy();
+    });
+
+    test('Testing the presents of submit icon', () => {
+        expect(document.querySelector('.fa-square-plus')).toBeTruthy();
+    });
+
+    test('Testing the presents of all navbar', () => {
+        expect(document.getElementById('All').textContent).toBe('All');
+        expect(document.querySelector('#All').className).toBe('active');
+    });
+
+    test('Testing the presents of pending navbar', () => {
+        expect(document.getElementById('Progress').textContent).toBe('Pending');
+    });
+
+    test('Testing the presents of finished navbar', () => {
+        expect(document.getElementById('Completed').textContent).toBe('Finished');
+    });
+
+    test('Testing the presents of added task', () => {
+        expect(document.querySelector('.content .text').textContent).not.toBeNull();
+    });
+
+    test('Testing the presents of checkbox icon', () => {
+        expect(document.querySelector('.actions .fa-circle-check')).toBeTruthy();
+    });
+    
+    test('Testing the presents of edit icon', () => {
+        expect(document.querySelector('.actions .fa-pen')).toBeTruthy();
+    });
+
+    test('Testing the presents of delete icon', () => {
+        expect(document.querySelector('.actions .fa-trash')).toBeTruthy();
+    });
+
+    test('Testing the presents of footer', () => {
+        expect(document.querySelector('footer').textContent).toBe('All © 2024. All Rights Reserved.');
+    });
+});
 
 describe('submitTask function', () => {
     afterEach(() => {
@@ -90,5 +145,61 @@ describe('showNotification', () => {
         expect(notification).toBeTruthy();
         expect(notification.textContent).toBe('Task deleted successfully');
         expect(notification.classList.contains('warning')).toBe(true);
+    });
+});
+
+describe('counts', () => {
+    beforeEach(() => {
+        document.documentElement.innerHTML = html.toString();
+    });
+
+    function counts(all_size, finished_size) {
+        const progress_count = all_size-finished_size;
+        document.getElementById("All").innerHTML = `All(${all_size})`;
+        document.getElementById("Progress").innerHTML = `Pending(${progress_count})`;
+        document.getElementById(
+          "Completed"
+        ).innerHTML = `Finished(${finished_size})`;
+      }
+
+    test('Testing the count function', () => {
+        counts(10,5);
+        expect(document.getElementById('All').innerHTML).toBe('All(10)');
+        expect(document.getElementById('Progress').innerHTML).toBe('Pending(5)');
+        expect(document.getElementById('Completed').innerHTML).toBe('Finished(5)');
+    });
+
+    test('Testing the count function', () => {
+        counts(0,0);
+        expect(document.getElementById('All').innerHTML).toBe('All(0)');
+        expect(document.getElementById('Progress').innerHTML).toBe('Pending(0)');
+        expect(document.getElementById('Completed').innerHTML).toBe('Finished(0)');
+    });
+
+    test('Testing the count function', () => {
+        counts(7,0);
+        expect(document.getElementById('All').innerHTML).toBe('All(7)');
+        expect(document.getElementById('Progress').innerHTML).toBe('Pending(7)');
+        expect(document.getElementById('Completed').innerHTML).toBe('Finished(0)');
+    });
+});
+
+describe('confirm function', () => {
+    afterEach(() => {
+        document.body.innerHTML = ''; // Clean up the DOM after each test
+    });
+
+    test('checking the presents of confirm box and it contents', () => {
+        confirmFunction('Task still in pending?', 'Hello');
+        expect(document.querySelector('.confirm-box')).toBeTruthy();
+        expect(document.querySelector('.confirm-box .message-box')).toBeTruthy();
+        expect(document.querySelector('.confirm-box .message-box').innerText).toBe('Task still in pending?');
+        expect(document.querySelector('.confirm-box .popTaskBox')).toBeTruthy();
+        expect(document.querySelector('.confirm-box .popTaskBox').innerText).toBe('Hello');
+        expect(document.querySelector('.confirm-box .button-box')).toBeTruthy();
+        expect(document.querySelector('.button-box .yes-button')).toBeTruthy();
+        expect(document.querySelector('.button-box .yes-button').textContent).toBe('Yes');
+        expect(document.querySelector('.button-box .no-button')).toBeTruthy();
+        expect(document.querySelector('.button-box .no-button').textContent).toBe('No');
     });
 });
