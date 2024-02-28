@@ -1,12 +1,12 @@
-const pwArr = { Mobile: '1234567890', Password: 'Abc@123' };
+// const pwArr = { Mobile: '1234567890', Password: 'Abc@123' };
 
-localStorage.setItem('pwArr', JSON.stringify(pwArr));
-let storedCredentials = {};
+// localStorage.setItem('pwArr', JSON.stringify(pwArr));
+// let storedCredentials = {};
 
-function getCredentialsFromLocalStorage() {
-    storedCredentials = JSON.parse(localStorage.getItem("pwArr")) || [];
-}
-getCredentialsFromLocalStorage();
+// function getCredentialsFromLocalStorage() {
+//     storedCredentials = JSON.parse(localStorage.getItem("pwArr")) || [];
+// }
+// getCredentialsFromLocalStorage();
 
 let mobile = document.querySelector('#mobilenumber');
 let passw = document.querySelector('#password');
@@ -50,20 +50,21 @@ function passw_submit(passwordInput, passwordError) {
     }
 }
 
-function final_submit(mobileInput, passwordInput) {
-    if (mobileInput == storedCredentials.Mobile && passwordInput == storedCredentials.Password) {
-        call_twitter('https://twitter.com/');
-    }
-}
+// function final_submit(mobileInput, passwordInput) {
+//     if (mobileInput == storedCredentials.Mobile && passwordInput == storedCredentials.Password) {
+//         call_twitter('https://twitter.com/');
+//     }
+// }
 
 function call_twitter(url) {
     window.location.href = url;
 }
 
-// function final_submit(mobileInput, passwordInput) {
-//     if (mobileInput == '1234567890' && passwordInput == 'Abc@123') {
-//         window.location.href = 'https://twitter.com/';
-//     }
-// }
+function final_submit(mobileInput, passwordInput) {
+    if (mobileInput == '1234567890' && passwordInput == 'Abc@123') {
+        // window.location.href = 'https://twitter.com/';
+        call_twitter('https://twitter.com/');
+    }
+}
 
 module.exports = { mobile_submit, passw_submit, final_submit };
