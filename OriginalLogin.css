@@ -108,7 +108,8 @@ button:hover {
 }
 
 .error-message {
-    float: left;
+    /* float: left; */
+    text-align: left;
     color: red;
 }
 

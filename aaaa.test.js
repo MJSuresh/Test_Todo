@@ -9,8 +9,8 @@ const html = fs.readFileSync(path.resolve(__dirname, './OriginalLogin.html'), 'u
 const { JSDOM } = require('jsdom');
 
 function loadHTMLFile(filePath) {
-    const html2 = fs.readFileSync(filePath, 'utf-8');
-    const dom = new JSDOM(html2, { runScripts: 'dangerously', resources: 'usable' });
+    const html_load = fs.readFileSync(filePath, 'utf-8');
+    const dom = new JSDOM(html_load, { runScripts: 'dangerously', resources: 'usable' });
 
     // Wait for the scripts to be executed and resources to be loaded
     return new Promise((resolve) => {
@@ -21,7 +21,6 @@ function loadHTMLFile(filePath) {
 }
 
 test('Loaded HTML page is correct', async () => {
-    // Specify the path to your HTML file
     const htmlFilePath = 'OriginalLogin.html';
 
     // Load the HTML file
@@ -30,19 +29,18 @@ test('Loaded HTML page is correct', async () => {
     // Access the document object
     const document = dom.window.document;
 
-    // Perform your assertions based on the content of the loaded HTML
-    // For example, check if a specific element is present
+    // Performing assertions based on the content of the loaded HTML
+    // Checking a specific element is present or not
     const loginButton = document.getElementById('login-btn');
     expect(loginButton).not.toBeNull();
 });
 
-
 // testing the presents of contents
-describe('task testing', () => {
+describe('structure testing', () => {
     beforeEach(() => {
         document.documentElement.innerHTML = html.toString();
     });
-    
+
     test('Testing the presents of mobile input box', () => {
         expect(document.getElementById('mobilenumber').placeholder).toBe('Enter Number');
     });
@@ -76,6 +74,40 @@ describe('task testing', () => {
     });
 });
 
+describe('testing ContentLoaded', () => {
+    // testing ContentLoaded event listener
+    // const document = new JSDOM(html).window;
+    // global.document = document;
+
+    beforeEach(() => {
+        document.documentElement.innerHTML = html.toString();
+    });
+
+    test('test DOMContentLoaded', () => {
+        global.document.dispatchEvent(new Event('DOMContentLoaded'));
+        expect(document.getElementById('mobilenumber')).toBeTruthy();
+        expect(document.activeElement.id).toBe('mobilenumber');
+        expect(document.getElementById('password')).toBeTruthy();
+        const prevent_mock = jest.spyOn(Event.prototype, 'preventDefault')
+        document.getElementById('login-btn').click();
+        expect(prevent_mock).toBeCalled();
+        // document.getElementById('mobilenumber').dispatchEvent(new Event('input'))
+        document.getElementById('password').dispatchEvent(new Event('input'))
+        // document.getElementById('mobilenumber').value='1234567890';
+        // mobile_submit_mock('1234567890');
+        // expect(mobile_submit_mock).toHaveBeenCalledWith('1234567890');
+
+        const mobile_submit_mock = jest.fn();
+        global.mobile_submit = mobile_submit_mock;
+        const mobileInput = document.getElementById('mobilenumber');
+        mobileInput.value = '1234567890';
+        mobileInput.dispatchEvent(new Event('input'));
+
+        // Check if mobile_submit is called with the correct argument
+        expect(mobile_submit_mock).toHaveBeenCalledWith('1234567890');
+    });
+})
+
 // testing the mobile inputs
 describe('Test mobile input', () => {
     let mobileError;
@@ -96,36 +128,41 @@ describe('Test mobile input', () => {
 
     test('Empty mobile number input', () => {
         mobile_submit('');
-        expect(mobileError.textContent).toEqual('*This field is required');
+        expect(mobileError.textContent).toEqual('*Empty field');
     });
 
     test('Giving spaces in mobile number input', () => {
         mobile_submit('     ');
-        expect(mobileError.textContent).toEqual('*This field is required');
+        expect(mobileError.textContent).toEqual('*Invalid format');
     });
 
     test('Alphabets in mobile number input', () => {
         mobile_submit('dasdas');
-        expect(mobileError.textContent).toEqual('*This field is required');
+        expect(mobileError.textContent).toEqual('*Invalid format');
     });
 
     test('Giving spaces between the numbers in mobile number input', () => {
         mobile_submit('2123123 67');
-        expect(mobileError.textContent).toEqual('*Required 10 numbers');
+        expect(mobileError.textContent).toEqual('*Invalid format');
     });
 
     test('Spacial characters in mobile number input', () => {
         mobile_submit('@@@@@');
-        expect(mobileError.textContent).toEqual('*This field is required');
+        expect(mobileError.textContent).toEqual('*Invalid format');
     });
 
     test('Spacial characters and numbers in mobile number input', () => {
         mobile_submit('23123@$@');
-        expect(mobileError.textContent).toEqual('*Required 10 numbers');
+        expect(mobileError.textContent).toEqual('*Invalid format');
     });
 
     test('Negative value in mobile number input', () => {
         mobile_submit('-123123');
+        expect(mobileError.textContent).toEqual('*Invalid format');
+    });
+
+    test('contain less that 10 numbers', () => {
+        mobile_submit('123123');
         expect(mobileError.textContent).toEqual('*Required 10 numbers');
     });
 });
@@ -145,17 +182,17 @@ describe('Test password input', () => {
 
     test('Invalid password', () => {
         passw_submit("Abc@111");
-        expect(passwordError.textContent).toEqual('*Wrong password');
+        expect(passwordError.textContent).toEqual('');
     });
 
     test('Empty passowrd input', () => {
         passw_submit('');
-        expect(passwordError.textContent).toEqual('*This field is required');
+        expect(passwordError.textContent).toEqual('*Empty field');
     });
 
     test('Giving spaces in password input', () => {
         passw_submit('     ');
-        expect(passwordError.textContent).toEqual('*This field is required');
+        expect(passwordError.textContent).toEqual("*Password doesn't contain space");
     });
 
     test('Alphabets in password input', () => {
@@ -165,22 +202,22 @@ describe('Test password input', () => {
 
     test('Only alphabets in password input', () => {
         passw_submit('dasdaas');
-        expect(passwordError.textContent).toEqual('*Wrong password');
+        expect(passwordError.textContent).toEqual('');
     });
 
     test('Only numbers in passowrd input', () => {
         passw_submit('2123123');
-        expect(passwordError.textContent).toEqual('*Wrong password');
+        expect(passwordError.textContent).toEqual('');
     });
 
     test('Only special characters in password input', () => {
         passw_submit('@@@!#@@');
-        expect(passwordError.textContent).toEqual('*Wrong password');
+        expect(passwordError.textContent).toEqual('');
     });
 
     test('Valid mobile number', () => {
         passw_submit('-123123');
-        expect(passwordError.textContent).toEqual('*Wrong password');
+        expect(passwordError.textContent).toEqual('');
     });
 });
 
@@ -194,32 +231,42 @@ global.window.location = {
 };
 
 describe('login_submit function', () => {
+    let passwordError;
+    beforeEach(()=>{
+        document.documentElement.innerHTML=html.toString();
+        passwordError = document.getElementById('passwordError');
+    });
     afterEach(() => {
         global.window.location.href = '';
     });
 
-    it('should navigate by valid credentials', () => {
+    test('should navigate by valid credentials', () => {
         login_submit('1234567890', 'Abc@123');
         expect(global.window.location.href).toBe('https://twitter.com/');
+        expect(document.getElementById('passwordError').textContent).toBe('');
     });
 
-    it('should not navigate by invalid credentials', () => {
-        login_submit('invalid', 'invalid');
+    test('should not navigate by invalid credentials', () => {
+        login_submit('invalid', '567');
         expect(global.window.location.href).toBe('');
+        expect(document.getElementById('passwordError').textContent).toBe('');
     });
 
-    it('should not navigate if any invalid credential givens', () => {
+    test('should not navigate if any invalid credential givens', () => {
         login_submit('1234567890', 'invalid');
         expect(global.window.location.href).toBe('');
+        expect(document.getElementById('passwordError').textContent).toBe('*Wrong password');
     });
 
-    it('should not navigate if any invalid credential givens', () => {
+    test('should not navigate if any invalid credential givens', () => {
         login_submit('123456780', 'Abc@123');
         expect(global.window.location.href).toBe('');
+        expect(document.getElementById('passwordError').textContent).toBe('');
     });
 
-    it('should with valid credentials', () => {
-        login_submit('1234567890', 'Abc@123');
-        expect(global.window.location.href).toBe('https://twitter.com/');
+    test('should with valid credentials', () => {
+        login_submit('1234567890', '');
+        expect(global.window.location.href).toBe('');
+        expect(document.getElementById('passwordError').textContent).toBe('');
     });
 });
