@@ -37,76 +37,70 @@ test('Loaded HTML page is correct', async () => {
 
 // testing the presents of contents
 describe('structure testing', () => {
-    beforeEach(() => {
-        document.documentElement.innerHTML = html.toString();
-    });
-
     test('Testing the presents of mobile input box', () => {
+        document.documentElement.innerHTML = html.toString();
         expect(document.getElementById('mobilenumber').placeholder).toBe('Enter Number');
-    });
-
-    test('Testing the presents of password input box', () => {
         expect(document.getElementById('password').placeholder).toBe('Enter Password');
-    });
-
-    test('Testing the presents of login button', () => {
         expect(document.getElementById('login-btn').innerHTML).toBe('Login');
-    });
-
-    test('Testing the presents of forget password option', () => {
         expect(document.querySelector('#forget-password').innerHTML).toBe('Forget Password?');
-    });
-
-    test('Testing the presents of create new account option', () => {
         expect(document.querySelector('#create-new-account').innerHTML).toBe('Create New Account');
-    });
-
-    test('Testing the presents of facebook icon', () => {
         expect(document.querySelector('.fa-facebook')).toBeTruthy();
-    });
-
-    test('Testing the presents of twitter icon', () => {
+        expect(document.querySelector('.fa-facebook').href).toBe('https://www.facebook.com/')
         expect(document.querySelector('.fa-apple')).toBeTruthy();
-    });
-
-    test('Testing the presents of google icon', () => {
+        expect(document.querySelector('.fa-apple').href).toBe('https://www.apple.com/in/');
         expect(document.querySelector('.fa-google')).toBeTruthy();
+        expect(document.querySelector('.fa-google').href).toBe('https://www.google.com/')
     });
 });
 
 describe('testing ContentLoaded', () => {
-    // testing ContentLoaded event listener
-    // const document = new JSDOM(html).window;
-    // global.document = document;
 
     beforeEach(() => {
         document.documentElement.innerHTML = html.toString();
     });
 
     test('test DOMContentLoaded', () => {
+        // DOM load test
         global.document.dispatchEvent(new Event('DOMContentLoaded'));
-        expect(document.getElementById('mobilenumber')).toBeTruthy();
-        expect(document.activeElement.id).toBe('mobilenumber');
-        expect(document.getElementById('password')).toBeTruthy();
-        const prevent_mock = jest.spyOn(Event.prototype, 'preventDefault')
-        document.getElementById('login-btn').click();
-        expect(prevent_mock).toBeCalled();
-        // document.getElementById('mobilenumber').dispatchEvent(new Event('input'))
-        document.getElementById('password').dispatchEvent(new Event('input'))
-        // document.getElementById('mobilenumber').value='1234567890';
-        // mobile_submit_mock('1234567890');
-        // expect(mobile_submit_mock).toHaveBeenCalledWith('1234567890');
+        expect(document.activeElement.id).toBe('mobilenumber'); // NN. automatically get focus by loading the page
 
-        const mobile_submit_mock = jest.fn();
-        global.mobile_submit = mobile_submit_mock;
+        // Mobile input event listener test
+        const mobileInput = document.getElementById('mobilenumber');
+        mobileInput.value = 'TDD';
+        mobileInput.dispatchEvent(new Event('input'));
+        expect(document.getElementById('mobileError').textContent).toBe("*Invalid format");
+
+        // Password input event listener test
+        const passwordInput = document.getElementById('password');
+        passwordInput.value = 'ababab';
+        passwordInput.dispatchEvent(new Event('input'));
+        expect(document.getElementById('passwordError').textContent).toBe('*Required 7 characters');
+
+        // Login click event listener test
+        const prevent_mock = jest.spyOn(Event.prototype, 'preventDefault'); // NN
+        document.getElementById('login-btn').click();
+        expect(prevent_mock).toBeCalled(); // NN
+        expect(document.getElementById('passwordError').textContent).toBe('*Required 7 characters');
+    });
+
+    test('test DOMContentLoaded', () => {
+        global.document.dispatchEvent(new Event('DOMContentLoaded'));
+        expect(document.activeElement.id).toBe('mobilenumber');
+
         const mobileInput = document.getElementById('mobilenumber');
         mobileInput.value = '1234567890';
         mobileInput.dispatchEvent(new Event('input'));
+        expect(document.getElementById('mobileError').textContent).toBe("");
 
-        // Check if mobile_submit is called with the correct argument
-        expect(mobile_submit_mock).toHaveBeenCalledWith('1234567890');
+        const passwordInput = document.getElementById('password');
+        passwordInput.value = 'abababa';
+        passwordInput.dispatchEvent(new Event('input'));
+        expect(document.getElementById('passwordError').textContent).toBe('');
+
+        document.getElementById('login-btn').click();
+        expect(document.getElementById('passwordError').textContent).toBe('*Wrong password');
     });
-})
+});
 
 // testing the mobile inputs
 describe('Test mobile input', () => {
@@ -231,42 +225,38 @@ global.window.location = {
 };
 
 describe('login_submit function', () => {
-    let passwordError;
-    beforeEach(()=>{
-        document.documentElement.innerHTML=html.toString();
-        passwordError = document.getElementById('passwordError');
-    });
-    afterEach(() => {
+    beforeEach(() => {
+        document.documentElement.innerHTML = html.toString();
         global.window.location.href = '';
     });
 
     test('should navigate by valid credentials', () => {
         login_submit('1234567890', 'Abc@123');
         expect(global.window.location.href).toBe('https://twitter.com/');
-        expect(document.getElementById('passwordError').textContent).toBe('');
+        expect(passwordError.textContent).toBe('');
     });
 
     test('should not navigate by invalid credentials', () => {
         login_submit('invalid', '567');
         expect(global.window.location.href).toBe('');
-        expect(document.getElementById('passwordError').textContent).toBe('');
+        expect(passwordError.textContent).toBe('');
     });
 
     test('should not navigate if any invalid credential givens', () => {
         login_submit('1234567890', 'invalid');
         expect(global.window.location.href).toBe('');
-        expect(document.getElementById('passwordError').textContent).toBe('*Wrong password');
+        expect(passwordError.textContent).toBe('*Wrong password');
     });
 
     test('should not navigate if any invalid credential givens', () => {
         login_submit('123456780', 'Abc@123');
         expect(global.window.location.href).toBe('');
-        expect(document.getElementById('passwordError').textContent).toBe('');
+        expect(passwordError.textContent).toBe('');
     });
 
     test('should with valid credentials', () => {
         login_submit('1234567890', '');
         expect(global.window.location.href).toBe('');
-        expect(document.getElementById('passwordError').textContent).toBe('');
+        expect(passwordError.textContent).toBe('');
     });
 });
