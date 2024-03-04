@@ -71,7 +71,7 @@ function confirmFunction(message, content, callback) {
   });
 }
 
-window.addEventListener("load", () => {
+document.addEventListener("DOMContentLoaded", () => {
   let form = document.querySelector("#new-task-form #title");
   all = document.querySelector("#All");
   progress = document.querySelector("#Progress");
