@@ -39,17 +39,28 @@ test('Loaded HTML page is correct', async () => {
 describe('structure testing', () => {
     test('Testing the presents of mobile input box', () => {
         document.documentElement.innerHTML = html.toString();
+        expect(document.querySelector('.total-div')).toBeTruthy();
+        expect(document.querySelector('.login-div')).toBeTruthy();
+        expect(document.querySelector('h1').innerHTML).toBe('Login');
+        expect(document.querySelector('.details')).toBeTruthy();
+        expect(document.querySelectorAll('.details')[0].innerHTML).toBe('Phone Number');
         expect(document.getElementById('mobilenumber').placeholder).toBe('Enter Number');
+        expect(document.querySelector('#mobileError')).toBeTruthy();
+        expect(document.querySelectorAll('.details')[1].innerHTML).toBe('Password');
         expect(document.getElementById('password').placeholder).toBe('Enter Password');
+        expect(document.querySelector('#passwordError')).toBeTruthy();
         expect(document.getElementById('login-btn').innerHTML).toBe('Login');
         expect(document.querySelector('#forget-password').innerHTML).toBe('Forget Password?');
+        expect(document.querySelector('#forget-password').href).toEqual('https://twitter.com/i/flow/password_reset');
         expect(document.querySelector('#create-new-account').innerHTML).toBe('Create New Account');
+        expect(document.querySelector('#create-new-account').href).toEqual('https://twitter.com/i/flow/signup');
+        expect(document.querySelector('h4').innerHTML).toBe('Login with other option');
         expect(document.querySelector('.fa-facebook')).toBeTruthy();
-        expect(document.querySelector('.fa-facebook').href).toBe('https://www.facebook.com/')
+        expect(document.querySelector('.fa-facebook').href).toEqual('https://www.facebook.com/');
         expect(document.querySelector('.fa-apple')).toBeTruthy();
-        expect(document.querySelector('.fa-apple').href).toBe('https://www.apple.com/in/');
+        expect(document.querySelector('.fa-apple').href).toEqual('https://www.apple.com/in/');
         expect(document.querySelector('.fa-google')).toBeTruthy();
-        expect(document.querySelector('.fa-google').href).toBe('https://www.google.com/')
+        expect(document.querySelector('.fa-google').href).toEqual('https://www.google.com/');
     });
 });
 
@@ -76,17 +87,21 @@ describe('testing ContentLoaded', () => {
         passwordInput.dispatchEvent(new Event('input'));
         expect(document.getElementById('passwordError').textContent).toBe('*Required 7 characters');
 
+        // checking the static or dynamic nature of the button
+        const login = document.getElementById('login-btn');
+        expect(typeof login.click).toBe('function');
+
         // Login click event listener test
         const prevent_mock = jest.spyOn(Event.prototype, 'preventDefault'); // NN
         document.getElementById('login-btn').click();
         expect(prevent_mock).toBeCalled(); // NN
+        expect(document.getElementById('mobileError').textContent).toBe('*Invalid format');
         expect(document.getElementById('passwordError').textContent).toBe('*Required 7 characters');
     });
 
-    test('test DOMContentLoaded', () => {
+    test('testing DOMContentLoaded with inputs', () => {
         global.document.dispatchEvent(new Event('DOMContentLoaded'));
         expect(document.activeElement.id).toBe('mobilenumber');
-
         const mobileInput = document.getElementById('mobilenumber');
         mobileInput.value = '1234567890';
         mobileInput.dispatchEvent(new Event('input'));
