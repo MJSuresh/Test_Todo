@@ -1,4 +1,4 @@
-const { mobile_submit, passw_submit, login_submit } = require('./aaaa');
+const { mobile_submit, passw_submit, login_submit } = require('./FinalLoginTest');
 
 // retrieving sources for checking html contents
 const fs = require('fs')
@@ -20,24 +20,26 @@ function loadHTMLFile(filePath) {
     });
 }
 
-test('Loaded HTML page is correct', async () => {
-    const htmlFilePath = 'OriginalLogin.html';
+describe('Test page is loading or not', () => {
+    test('Loaded HTML page is correct', async () => {
+        const htmlFilePath = 'OriginalLogin.html';
 
-    // Load the HTML file
-    const dom = await loadHTMLFile(htmlFilePath);
+        // Load the HTML file
+        const dom = await loadHTMLFile(htmlFilePath);
 
-    // Access the document object
-    const document = dom.window.document;
+        // Access the document object
+        const document = dom.window.document;
 
-    // Performing assertions based on the content of the loaded HTML
-    // Checking a specific element is present or not
-    const loginButton = document.getElementById('login-btn');
-    expect(loginButton).not.toBeNull();
+        // Performing assertions based on the content of the loaded HTML
+        // Checking a specific element is present or not
+        const loginButton = document.getElementById('login-btn');
+        expect(loginButton).not.toBeNull();
+    });
 });
 
 // testing the presents of contents
 describe('structure testing', () => {
-    test('Testing the presents of mobile input box', () => {
+    test('Testing the presents of content in the page', () => {
         document.documentElement.innerHTML = html.toString();
         expect(document.querySelector('.total-div')).toBeTruthy();
         expect(document.querySelector('.login-div')).toBeTruthy();
