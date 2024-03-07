@@ -5,8 +5,11 @@ let input, taskBefore, confirm_message;
 let li2 = "";
 let edit_and_save, taskBox;
 
-todos = JSON.parse(localStorage.getItem("todos")) || [];
-completedTodos = JSON.parse(localStorage.getItem("completedTodos")) || [];
+todos = JSON.parse(localStorage.getItem("todos")) || ['hello', 'tea'];
+completedTodos = JSON.parse(localStorage.getItem("completedTodos")) || ['hello'];
+
+// todos = JSON.parse(localStorage.getItem("todos")) || [];
+// completedTodos = JSON.parse(localStorage.getItem("completedTodos")) || [];
 
 window.addEventListener("load", () => {
     let form = document.querySelector("#new-task-form #title");
@@ -157,6 +160,155 @@ function display(task) {
     }
 }
 
+window.checkbox_function = function (check_task) {
+    const update_check_task =
+        check_task.parentElement.previousElementSibling.querySelector(
+            "span"
+        ).innerHTML;
+
+    // const update_check_task = check_task;
+    if (input.value == "") {
+        if (
+            document.querySelector(".active").id == "Completed" ||
+            (check_task.firstChild.style.backgroundColor == "green" &&
+                document.querySelector(".active").id == "All")
+        ) {
+            confirmFunction(
+                "Task still in pending?\n\n",
+                update_check_task,
+                function (result) {
+                    if (result) {
+                        completedTodos.splice(completedTodos.indexOf(update_check_task), 1);
+                        localStorage.setItem(
+                            "completedTodos",
+                            JSON.stringify(completedTodos)
+                        );
+                        showNotification("Task moved to Pending.", "process");
+                        if (document.querySelector(".active").id == "Completed") {
+                            completed.click();
+                            counts();
+                        } else {
+                            all.click();
+                            counts();
+                        }
+                    }
+                }
+            );
+        } else if (
+            document.querySelector(".active").id == "Progress" ||
+            (check_task.firstChild.style.backgroundColor == "orange" &&
+                document.querySelector(".active").id == "All")
+        ) {
+            confirmFunction(
+                "Are you want to complete the task?\n\n",
+                update_check_task,
+                function (result) {
+                    if (result) {
+                        completedTodos.push(update_check_task);
+                        localStorage.setItem(
+                            "completedTodos",
+                            JSON.stringify(completedTodos)
+                        );
+                        showNotification("Task completed.", "success");
+                        if (document.querySelector(".active").id == "Progress") {
+                            progress.click();
+                            counts();
+                        } else {
+                            all.click();
+                            counts();
+                        }
+                    }
+                }
+            );
+        }
+    } else {
+        showNotification("Can't change the task status while updating.", "warning");
+    }
+}
+
+window.edit_function = function (edit_task) {
+    const update_edit_task =
+        edit_task.parentElement.previousElementSibling.querySelector(
+            "span"
+        ).innerHTML;
+
+    if (!completedTodos.includes(update_edit_task)) {
+        input.value = update_edit_task;
+        input.focus();
+        edit_and_save = update_edit_task;
+    } else {
+        showNotification("Can't edit the finished task.", "warning");
+    }
+}
+
+window.delete_function = function (delete_task) {
+    const update_delete_task =
+        delete_task.parentElement.previousElementSibling.querySelector(
+            "span"
+        ).innerHTML;
+    if (input.value == "") {
+        if (
+            document.querySelector(".active").id == "Completed" ||
+            (delete_task.parentElement.firstElementChild.firstChild.style
+                .backgroundColor == "green" &&
+                document.querySelector(".active").id == "All")
+        ) {
+            confirmFunction(
+                `Are you want to delete the TASK?\n\n`,
+                update_delete_task,
+                function (result) {
+                    if (result) {
+                        todos.splice(todos.indexOf(update_delete_task), 1);
+                        completedTodos.splice(
+                            completedTodos.indexOf(update_delete_task),
+                            1
+                        );
+                        localStorage.setItem("todos", JSON.stringify(todos));
+                        localStorage.setItem(
+                            "completedTodos",
+                            JSON.stringify(completedTodos)
+                        );
+                        showNotification("Task deleted successfully.", "warning");
+                        if (document.querySelector(".active").id == "Completed") {
+                            completed.click();
+                            counts();
+                        } else {
+                            all.click();
+                            counts();
+                        }
+                    }
+                }
+            );
+        } else if (
+            document.querySelector(".active").id == "Progress" ||
+            (delete_task.parentElement.firstElementChild.firstChild.style
+                .backgroundColor == "orange" &&
+                document.querySelector(".active").id == "All")
+        ) {
+            confirmFunction(
+                `Are you want to delete the TASK?\n\n`,
+                update_delete_task,
+                function (result) {
+                    if (result) {
+                        todos.splice(todos.indexOf(update_delete_task), 1);
+                        localStorage.setItem("todos", JSON.stringify(todos));
+                        showNotification("Task deleted successfully.", "warning");
+                        if (document.querySelector(".active").id == "Progress") {
+                            progress.click();
+                            counts();
+                        } else {
+                            all.click();
+                            counts();
+                        }
+                    }
+                }
+            );
+        }
+    } else {
+        showNotification("Can't delete the task while updating.", "warning");
+    }
+}
+
 function showNotification(message, type) {
     const popUp = document.createElement("div");
     popUp.id = "notification-popup";
@@ -175,7 +327,7 @@ function showNotification(message, type) {
     }, 1000);
 }
 
-function confirmFunction(message, content, callback) {
+window.confirmFunction = function (message, content, callback) {
     const confirmBox = document.createElement("div");
     confirmBox.classList.add("confirm-box");
 
