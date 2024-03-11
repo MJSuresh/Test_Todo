@@ -1,15 +1,20 @@
 let all, progress, completed;
 let todos = [],
     completedTodos = [];
-let input, taskBefore, confirm_message;
+let input;
 let li2 = "";
 let edit_and_save, taskBox;
 
 todos = JSON.parse(localStorage.getItem("todos")) || ['hello', 'tea'];
 completedTodos = JSON.parse(localStorage.getItem("completedTodos")) || ['hello'];
 
+// Actual Code
 // todos = JSON.parse(localStorage.getItem("todos")) || [];
 // completedTodos = JSON.parse(localStorage.getItem("completedTodos")) || [];
+
+// For testing navbar NO CONTENT TEXT if todo had no pending task
+// todos = JSON.parse(localStorage.getItem("todos")) || ['hello'];
+// completedTodos = JSON.parse(localStorage.getItem("completedTodos")) || ['hello'];
 
 window.addEventListener("load", () => {
     let form = document.querySelector("#new-task-form #title");
@@ -390,4 +395,4 @@ function counts() {
 //     taskBox.scrollTo({ top: 0, behavior: "smooth" });
 // }
 
-module.exports = { submitTask, showNotification, confirmFunction, display, counts };
+module.exports = { submitTask, showNotification, confirmFunction, counts };
