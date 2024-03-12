@@ -28,27 +28,29 @@ describe('Testing contents', () => {
     });
 });
 
-// describe('Testing navbar output if todo had no task', () => {
-//     beforeEach(()=>{
-//         document.documentElement.innerText=html.toString();
-//     })
+describe.skip('Testing navbar output if todo had no task', () => {
+    beforeEach(() => {
+        document.documentElement.innerText = html.toString();
+    })
 
-//     test('Expecting NO CONTENT TEXT for PENDING navbar if todo had no pending task', () => {
-//         window.dispatchEvent(new Event('load'))
-//         document.getElementById('Progress').click()
-//         expect(document.querySelector('#tasks .no_task_span').innerHTML).toBe("You don't have any Pending Task")
-//     })
+    // test for having no pending task
+    test('Expecting NO CONTENT TEXT for PENDING navbar if todo had no pending task', () => {
+        window.dispatchEvent(new Event('load'))
+        document.getElementById('Progress').click()
+        expect(document.querySelector('#tasks .no_task_span').innerHTML).toBe("You don't have any Pending Task")
+    })
 
-//     test('Expecting NO CONTENT TEXT for ALL, PENDING and FINISHED navbar if todo had no task', () => {
-//         window.dispatchEvent(new Event('load'))
-//         document.getElementById('All').click()
-//         expect(document.querySelector('#tasks .no_task_span').innerHTML).toBe('No Task were added')
-//         document.getElementById('Progress').click()
-//         expect(document.querySelector('#tasks .no_task_span').innerHTML).toBe("You don't have any Pending Task")
-//         document.getElementById('Completed').click()
-//         expect(document.querySelector('#tasks .no_task_span').innerHTML).toBe("You don't have any Finished Task")
-//     })
-// })
+    // test for having no task
+    test('Expecting NO CONTENT TEXT for ALL, PENDING and FINISHED navbar if todo had no task', () => {
+        window.dispatchEvent(new Event('load'))
+        document.getElementById('All').click()
+        expect(document.querySelector('#tasks .no_task_span').innerHTML).toBe('No Task were added')
+        document.getElementById('Progress').click()
+        expect(document.querySelector('#tasks .no_task_span').innerHTML).toBe("You don't have any Pending Task")
+        document.getElementById('Completed').click()
+        expect(document.querySelector('#tasks .no_task_span').innerHTML).toBe("You don't have any Finished Task")
+    })
+})
 
 describe('Testing submitTask function', () => {
     beforeEach(() => {
@@ -69,6 +71,13 @@ describe('Testing submitTask function', () => {
         expect(document.getElementById('notification-popup').textContent).toBe('Empty/Invalid Task not accepted.')
     });
 
+    test('Submitting the task with empty spaces and special characters', () => {
+        window.dispatchEvent(new Event('load'))
+        submitTask('#$%#$%          %^&%&^&', 'empty_or_null');
+        expect(document.getElementById('All').innerHTML).toBe('All(2)');
+        expect(document.getElementById('notification-popup').textContent).toBe('Empty/Invalid Task not accepted.')
+    });
+
     test('Submitting new task', () => {
         window.dispatchEvent(new Event('load'))
         submitTask('morning', 'empty_or_null');
@@ -78,6 +87,8 @@ describe('Testing submitTask function', () => {
         expect(task_text_check.querySelector('.fa-pen')).toBeTruthy();
         expect(task_text_check.querySelector('.fa-trash')).toBeTruthy();
         expect(document.getElementById('All').innerHTML).toBe('All(3)');
+        expect(document.getElementById('Progress').innerHTML).toBe('Pending(2)');
+        expect(document.getElementById('Completed').innerHTML).toBe('Finished(1)');
         expect(document.getElementById('notification-popup').textContent).toBe('Task added successfully.')
     });
 
@@ -98,11 +109,29 @@ describe('Testing submitTask function', () => {
         expect(document.getElementById('notification-popup').textContent).toBe('Task already exist.')
     });
 
-    test('Submitting new task', () => {
+    test('Submitting new task with special characters', () => {
         window.dispatchEvent(new Event('load'))
-        submitTask('bad morning', 'empty_or_null');
+        document.querySelector('#title').value = 'bad morning #$%#%^$^%';
+        document.getElementById("add-icon").click();
+        const task_text_check = document.querySelectorAll('.task')[0]
+        expect(task_text_check.querySelector('.content .text').innerHTML).toBe('bad morning')
         expect(document.getElementById('All').innerHTML).toBe('All(4)');
         expect(document.getElementById('notification-popup').textContent).toBe('Task added successfully.')
+    });
+
+    test('Submitting empty task by clicking add-icon', () => {
+        window.dispatchEvent(new Event('load'));
+        document.getElementById("add-icon").click();
+        expect(typeof document.getElementById("add-icon").click).toBe('function');
+        expect(document.getElementById('notification-popup').textContent).toBe('Empty/Invalid Task not accepted.')
+    });
+
+    test('Submitting new task by enter keyword', () => {
+        window.dispatchEvent(new Event('load'));
+        const form = document.querySelector('#new-task-form #title');
+        const enter_key_event = new KeyboardEvent('keyup', { key: 'Enter' });
+        form.dispatchEvent(enter_key_event);
+        expect(document.getElementById('notification-popup').textContent).toBe('Empty/Invalid Task not accepted.')
     });
 });
 
@@ -113,12 +142,7 @@ describe('Testing navbar click event', () => {
 
     test('Testing each navbar click event', () => {
         window.dispatchEvent(new Event('load'));
-        const form = document.querySelector('#new-task-form #title');
-        const enter_key_event = new KeyboardEvent('keyup', { key: 'Enter' });
-        form.dispatchEvent(enter_key_event);
         expect(document.getElementById('All').innerHTML).toBe('All(4)');
-        document.getElementById("add-icon").click();
-        expect(typeof document.getElementById("add-icon").click).toBe('function');
         expect(document.querySelector('.active').id).toBe('All')
         document.getElementById('Completed').click();
         expect(typeof document.getElementById("Completed").click).toBe('function');
@@ -256,27 +280,27 @@ describe('Testing delete_function', () => {
         document.documentElement.innerHTML = html.toString();
     })
 
-    // test('Testing delete for pending task if it is in the ALL navbar', () => {
-    //     window.dispatchEvent(new Event('load'))
-    //     const delete_function = document.querySelectorAll('.task')[0].querySelector('.delete');
-    //     delete_function.click();
-    //     const yesbtn = document.querySelector('.yes-button');
-    //     yesbtn.click();
-    //     expect(document.getElementById('notification-popup').textContent).toBe("Task deleted successfully.");
-    //     expect(document.getElementById('All').innerHTML).toBe('All(3)');
-    // });
+    test.skip('Testing delete for pending task if it is in the ALL navbar', () => {
+        window.dispatchEvent(new Event('load'))
+        const delete_function = document.querySelectorAll('.task')[0].querySelector('.delete');
+        delete_function.click();
+        const yesbtn = document.querySelector('.yes-button');
+        yesbtn.click();
+        expect(document.getElementById('notification-popup').textContent).toBe("Task deleted successfully.");
+        expect(document.getElementById('All').innerHTML).toBe('All(3)');
+    });
 
-    // test('Testing delete for pending task if it is in the PROGRESS navbar', () => {
-    //     window.dispatchEvent(new Event('load'))
-    //     document.getElementById('All').classList.remove('active');
-    //     document.getElementById('Progress').classList.add('active');
-    //     const delete_function = document.querySelectorAll('.task')[0].querySelector('.delete');
-    //     delete_function.click();
-    //     const yesbtn = document.querySelector('.yes-button');
-    //     yesbtn.click();
-    //     expect(document.getElementById('notification-popup').textContent).toBe("Task deleted successfully.");
-    //     expect(document.getElementById('Progress').innerHTML).toBe('Pending(2)');
-    // });
+    test.skip('Testing delete for pending task if it is in the PROGRESS navbar', () => {
+        window.dispatchEvent(new Event('load'))
+        document.getElementById('All').classList.remove('active');
+        document.getElementById('Progress').classList.add('active');
+        const delete_function = document.querySelectorAll('.task')[0].querySelector('.delete');
+        delete_function.click();
+        const yesbtn = document.querySelector('.yes-button');
+        yesbtn.click();
+        expect(document.getElementById('notification-popup').textContent).toBe("Task deleted successfully.");
+        expect(document.getElementById('Progress').innerHTML).toBe('Pending(2)');
+    });
 
     test('Testing pending task checkbox if input has some values', () => {
         window.dispatchEvent(new Event('load'))
@@ -287,28 +311,28 @@ describe('Testing delete_function', () => {
         expect(document.getElementById('All').innerHTML).toBe('All(4)');
     });
 
-    // test('Testing completed task checkbox if it is in the ALL navbar', () => {
-    //     window.dispatchEvent(new Event('load'))
-    //     const delete_function = document.querySelectorAll('.task')[3].querySelector('.delete');
-    //     delete_function.click();
-    //     const yesbtn = document.querySelector('.yes-button');
-    //     yesbtn.click();
-    //     expect(document.getElementById('notification-popup').textContent).toBe("Task deleted successfully.");
-    //     expect(document.getElementById('All').innerHTML).toBe('All(3)');
-    // });
+    test.skip('Testing completed task checkbox if it is in the ALL navbar', () => {
+        window.dispatchEvent(new Event('load'))
+        const delete_function = document.querySelectorAll('.task')[3].querySelector('.delete');
+        delete_function.click();
+        const yesbtn = document.querySelector('.yes-button');
+        yesbtn.click();
+        expect(document.getElementById('notification-popup').textContent).toBe("Task deleted successfully.");
+        expect(document.getElementById('All').innerHTML).toBe('All(3)');
+    });
 
-    // test('Testing completed task checkbox if it is in the FINISHED navbar', () => {
-    //     window.dispatchEvent(new Event('load'))
-    //     document.getElementById('All').classList.remove('active');
-    //     document.getElementById('Completed').classList.add('active');
-    //     const delete_function = document.querySelectorAll('.task')[3].querySelector('.delete');
-    //     delete_function.click();
-    //     const yesbtn = document.querySelector('.yes-button');
-    //     yesbtn.click();
-    //     expect(document.getElementById('notification-popup').textContent).toBe("Task deleted successfully.");
-    //     expect(document.getElementById('All').innerHTML).toBe('All(3)');
-    //     expect(document.getElementById('Completed').innerHTML).toBe('Finished(0)');
-    // });
+    test.skip('Testing completed task checkbox if it is in the FINISHED navbar', () => {
+        window.dispatchEvent(new Event('load'))
+        document.getElementById('All').classList.remove('active');
+        document.getElementById('Completed').classList.add('active');
+        const delete_function = document.querySelectorAll('.task')[3].querySelector('.delete');
+        delete_function.click();
+        const yesbtn = document.querySelector('.yes-button');
+        yesbtn.click();
+        expect(document.getElementById('notification-popup').textContent).toBe("Task deleted successfully.");
+        expect(document.getElementById('All').innerHTML).toBe('All(3)');
+        expect(document.getElementById('Completed').innerHTML).toBe('Finished(0)');
+    });
 
     test('Testing completed task checkbox if input has some values', () => {
         window.dispatchEvent(new Event('load'))
@@ -325,58 +349,58 @@ describe('Testing checkbox_function', () => {
         document.documentElement.innerHTML = html.toString();
     })
 
-    // test('Testing pending task checkbox if it is in the ALL navbar', () => {
-    //     window.dispatchEvent(new Event('load'))
-    //     const checkbox_function = document.querySelectorAll('.task')[0].querySelector('#myCheckbox');
-    //     checkbox_function.click();
-    //     const yesbtn = document.querySelector('.yes-button');
-    //     yesbtn.click();
-    //     expect(document.getElementById('notification-popup').textContent).toBe("Task completed.");
-    //     expect(document.getElementById('Completed').innerHTML).toBe('Finished(2)');
-    // });
+    test.skip('Testing pending task checkbox if it is in the ALL navbar', () => {
+        window.dispatchEvent(new Event('load'))
+        const checkbox_function = document.querySelectorAll('.task')[0].querySelector('#myCheckbox');
+        checkbox_function.click();
+        const yesbtn = document.querySelector('.yes-button');
+        yesbtn.click();
+        expect(document.getElementById('notification-popup').textContent).toBe("Task completed.");
+        expect(document.getElementById('Completed').innerHTML).toBe('Finished(2)');
+    });
 
-    // test('Testing pending task checkbox if it is in the PENDING navbar', () => {
-    //     window.dispatchEvent(new Event('load'))
-    //     document.getElementById('All').classList.remove('active');
-    //     document.getElementById('Progress').classList.add('active');
-    //     const checkbox_function = document.querySelectorAll('.task')[0].querySelector('#myCheckbox');
-    //     checkbox_function.click();
-    //     const yesbtn = document.querySelector('.yes-button');
-    //     yesbtn.click();
-    //     expect(document.getElementById('notification-popup').textContent).toBe("Task completed.");
-    //     expect(document.getElementById('Progress').innerHTML).toBe('Pending(2)');
-    // });
+    test.skip('Testing pending task checkbox if it is in the PENDING navbar', () => {
+        window.dispatchEvent(new Event('load'))
+        document.getElementById('All').classList.remove('active');
+        document.getElementById('Progress').classList.add('active');
+        const checkbox_function = document.querySelectorAll('.task')[0].querySelector('#myCheckbox');
+        checkbox_function.click();
+        const yesbtn = document.querySelector('.yes-button');
+        yesbtn.click();
+        expect(document.getElementById('notification-popup').textContent).toBe("Task completed.");
+        expect(document.getElementById('Progress').innerHTML).toBe('Pending(2)');
+    });
 
     test('Testing pending task checkbox if input has some values', () => {
         window.dispatchEvent(new Event('load'))
-        document.querySelector('#title').value = '21312';
+        document.querySelector('#title').value = '123231';
         const checkbox_function = document.querySelectorAll('.task')[0].querySelector('#myCheckbox');
         checkbox_function.click();
         expect(document.getElementById('notification-popup').textContent).toBe("Can't change the task status while updating.");
         expect(document.getElementById('Completed').innerHTML).toBe('Finished(1)');
     });
 
-    // test('Testing completed task checkbox if it is in the ALL navbar', () => {
-    //     window.dispatchEvent(new Event('load'))
-    //     const checkbox_function = document.querySelectorAll('.task')[3].querySelector('#myCheckbox');
-    //     checkbox_function.click();
-    //     const yesbtn = document.querySelector('.yes-button');
-    //     yesbtn.click();
-    //     expect(document.getElementById('notification-popup').textContent).toBe("Task moved to Pending.");
-    //     expect(document.getElementById('Completed').innerHTML).toBe('Finished(0)');
-    // });
+    test.skip('Testing completed task checkbox if it is in the ALL navbar', () => {
+        window.dispatchEvent(new Event('load'))
+        const checkbox_function = document.querySelectorAll('.task')[3].querySelector('#myCheckbox');
+        checkbox_function.click();
+        const yesbtn = document.querySelector('.yes-button');
+        yesbtn.click();
+        expect(document.getElementById('notification-popup').textContent).toBe("Task moved to Pending.");
+        expect(document.getElementById('Completed').innerHTML).toBe('Finished(0)');
+    });
 
-    // test('Testing completed task checkbox if it is in the FINISHED navbar', () => {
-    //     window.dispatchEvent(new Event('load'))
-    //     document.getElementById('All').classList.remove('active');
-    //     document.getElementById('Completed').classList.add('active');
-    //     const checkbox_function = document.querySelectorAll('.task')[3].querySelector('#myCheckbox');
-    //     checkbox_function.click();
-    //     const yesbtn = document.querySelector('.yes-button');
-    //     yesbtn.click();
-    //     expect(document.getElementById('notification-popup').textContent).toBe("Task moved to Pending.");
-    //     expect(document.getElementById('Completed').innerHTML).toBe('Finished(0)');
-    // });
+    test.skip('Testing completed task checkbox if it is in the FINISHED navbar', () => {
+        window.dispatchEvent(new Event('load'))
+        document.getElementById('All').classList.remove('active');
+        document.getElementById('Completed').classList.add('active');
+        const checkbox_function = document.querySelectorAll('.task')[3].querySelector('#myCheckbox');
+        checkbox_function.click();
+        const yesbtn = document.querySelector('.yes-button');
+        yesbtn.click();
+        expect(document.getElementById('notification-popup').textContent).toBe("Task moved to Pending.");
+        expect(document.getElementById('Completed').innerHTML).toBe('Finished(0)');
+    });
 
     test('Testing completed task checkbox if input has some values', () => {
         window.dispatchEvent(new Event('load'))
